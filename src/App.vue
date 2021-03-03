@@ -1,76 +1,83 @@
 <template>
   <v-app>
-    <v-main>
-      <v-card color="grey lighten-4" flat tile>
-        <v-toolbar dense>
-          <v-app-bar-nav-icon
-            @click.stop="drawer = !drawer"
-          ></v-app-bar-nav-icon>
+    <v-app-bar color="white" dense fixed>
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
 
-          <v-toolbar-title>
-            
-            Lyrica
-          </v-toolbar-title>
+      <v-toolbar-title>
+        <v-icon>mdi-vuetify</v-icon>
+        Lyrica
+      </v-toolbar-title>
 
-          <v-spacer></v-spacer>
-        </v-toolbar>
-      </v-card>
+      <v-spacer></v-spacer>
+    </v-app-bar>
 
-      <v-navigation-drawer
-        class="deep-purple accent-4"
-        dark
-        v-model="drawer"
-        absolute
-        temporary
-      >
-        <v-list-item>
-          <v-list-item-avatar>
-            <v-img src="https://randomuser.me/api/portraits/men/78.jpg"></v-img>
-          </v-list-item-avatar>
+    <v-navigation-drawer
+      class="deep-purple accent-4"
+      src="https://cdn.vuetifyjs.com/images/backgrounds/bg-2.jpg"
+      dark
+      v-model="drawer"
+      absolute
+      temporary
+      height="100vh"
+      style="position: fixed;"
+    >
+      <v-list-item nav dense>
+        <v-list-item-avatar>
+          <v-img src="https://randomuser.me/api/portraits/men/78.jpg"></v-img>
+        </v-list-item-avatar>
+
+        <v-list-item-content>
+          <v-list-item-title>John Leider</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-divider></v-divider>
+
+      <v-list>
+        <v-list-item v-for="item in items" :key="item.title" link>
+          <v-list-item-icon>
+            <v-icon>{{ item.icon }}</v-icon>
+          </v-list-item-icon>
 
           <v-list-item-content>
-            <v-list-item-title>John Leider</v-list-item-title>
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+      </v-list>
 
-        <v-divider></v-divider>
+      <template v-slot:append>
+        <div class="pa-2">
+          <v-btn block> Logout </v-btn>
+        </div>
+      </template>
+    </v-navigation-drawer>
 
-        <v-list>
-          <v-list-item v-for="item in items" :key="item.title" link>
-            <v-list-item-icon>
-              <v-icon>{{ item.icon }}</v-icon>
-            </v-list-item-icon>
-
-            <v-list-item-content>
-              <v-list-item-title>{{ item.title }}</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-
-        <template v-slot:append>
-          <div class="pa-2">
-            <v-btn block> Logout </v-btn>
-          </div>
-        </template>
-      </v-navigation-drawer>
+    <v-main>
+      <v-container class="mt-12">
+        <router-view></router-view>
+      </v-container>
     </v-main>
   </v-app>
 </template>
 
 <script>
+// import Lyric from "./screens/Lyrics";
 export default {
   name: "App",
   data() {
     return {
       drawer: null,
       items: [
-        { title: "Dashboard", icon: "mdi-view-dashboard" },
+        { title: "Lyrics", icon: "mdi-view-dashboard" },
         { title: "Profile", icon: "mdi-account-box" },
         { title: "Create", icon: "mdi-file" },
         { title: "Backup", icon: "mdi-backup-restore" },
         { title: "Settings", icon: "mdi-hammer-wrench" },
       ],
     };
+  },
+  components: {
+    // Lyric,
   },
 };
 </script>
