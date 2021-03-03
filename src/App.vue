@@ -34,7 +34,7 @@
       <v-divider></v-divider>
 
       <v-list>
-        <v-list-item v-for="item in items" :key="item.title" link>
+        <v-list-item v-for="item in items" :key="item.title" :to="item.link" link>
           <v-list-item-icon>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-item-icon>
@@ -68,11 +68,11 @@ export default {
     return {
       drawer: null,
       items: [
-        { title: "Lyrics", icon: "mdi-view-dashboard" },
-        { title: "Profile", icon: "mdi-account-box" },
-        { title: "Create", icon: "mdi-file" },
-        { title: "Backup", icon: "mdi-backup-restore" },
-        { title: "Settings", icon: "mdi-hammer-wrench" },
+        { title: "Lyrics", icon: "mdi-view-dashboard", link: "/" },
+        { title: "Profile", icon: "mdi-account-box", link: "/profile" },
+        { title: "Create", icon: "mdi-file", link: "/create" },
+        { title: "Backup", icon: "mdi-backup-restore", link: "/backup" },
+        { title: "Settings", icon: "mdi-hammer-wrench", link: "/settings" },
       ],
     };
   },
