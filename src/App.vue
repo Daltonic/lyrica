@@ -53,7 +53,7 @@
     </v-navigation-drawer>
 
     <v-main>
-      <v-container class="mt-12">
+      <v-container class="my-12">
         <router-view></router-view>
       </v-container>
     </v-main>
