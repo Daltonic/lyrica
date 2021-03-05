@@ -12,6 +12,14 @@
             <v-row>
               <v-col cols="12">
                 <v-text-field
+                  v-model="form.fullname"
+                  label="Fullname"
+                  required
+                ></v-text-field>
+              </v-col>
+              
+              <v-col cols="12">
+                <v-text-field
                   v-model="form.email"
                   label="E-mail"
                   type="email"
@@ -27,17 +35,17 @@
                   required
                 ></v-text-field>
               </v-col>
-
+              
               <v-col cols="6">
                 <a to="/forget">Forget Password</a>
               </v-col>
               
               <v-col cols="6">
-                New to Lyrica? <a to="/register">Register</a>
+                Already a member? <a to="/login">Login</a>
               </v-col>
 
               <v-col cols="12">
-                <v-btn type="submit" color="red"> Login </v-btn>
+                <v-btn type="submit" color="red"> Register </v-btn>
               </v-col>
             </v-row>
           </v-form>
@@ -52,6 +60,7 @@ export default {
   data: () => ({
     valid: true,
     form: {
+      fullname: "",
       email: "",
       password: ""
     },
