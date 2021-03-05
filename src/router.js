@@ -29,6 +29,11 @@ const routes = [
     component: () => import(/* webpackChunkName: "settings" */ './screens/Settings.vue'),
     name: 'settings'
   },
+  {
+    path: '/login',
+    component: () => import(/* webpackChunkName: "login" */ './screens/Login.vue'),
+    name: 'login'
+  },
 ]
 
 const router = new Router({

@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar color="white" dense fixed>
+    <!-- <v-app-bar color="white" dense fixed>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
 
       <v-toolbar-title>
@@ -9,9 +9,9 @@
       </v-toolbar-title>
 
       <v-spacer></v-spacer>
-    </v-app-bar>
+    </v-app-bar> -->
 
-    <v-navigation-drawer
+    <!-- <v-navigation-drawer
       class="deep-purple accent-4"
       src="https://cdn.vuetifyjs.com/images/backgrounds/bg-2.jpg"
       dark
@@ -50,7 +50,7 @@
           <v-btn block> Logout </v-btn>
         </div>
       </template>
-    </v-navigation-drawer>
+    </v-navigation-drawer> -->
 
     <v-main>
       <v-container class="my-12">
@@ -61,7 +61,6 @@
 </template>
 
 <script>
-// import Lyric from "./screens/Lyrics";
 export default {
   name: "App",
   data() {
@@ -75,9 +74,6 @@ export default {
         { title: "Settings", icon: "mdi-hammer-wrench", link: "/settings" },
       ],
     };
-  },
-  components: {
-    // Lyric,
   },
 };
 </script>
