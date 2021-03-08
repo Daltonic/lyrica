@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <!-- <v-app-bar color="white" dense fixed>
+    <v-app-bar color="white" dense fixed>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
 
       <v-toolbar-title>
@@ -9,9 +9,9 @@
       </v-toolbar-title>
 
       <v-spacer></v-spacer>
-    </v-app-bar> -->
+    </v-app-bar>
 
-    <!-- <v-navigation-drawer
+    <v-navigation-drawer
       class="deep-purple accent-4"
       src="https://cdn.vuetifyjs.com/images/backgrounds/bg-2.jpg"
       dark
@@ -19,7 +19,7 @@
       absolute
       temporary
       height="100vh"
-      style="position: fixed;"
+      style="position: fixed"
     >
       <v-list-item nav dense>
         <v-list-item-avatar>
@@ -34,7 +34,12 @@
       <v-divider></v-divider>
 
       <v-list>
-        <v-list-item v-for="item in items" :key="item.title" :to="item.link" link>
+        <v-list-item
+          v-for="item in items"
+          :key="item.title"
+          :to="item.link"
+          link
+        >
           <v-list-item-icon>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-item-icon>
@@ -50,7 +55,7 @@
           <v-btn block> Logout </v-btn>
         </div>
       </template>
-    </v-navigation-drawer> -->
+    </v-navigation-drawer>
 
     <v-main>
       <v-container class="my-12">

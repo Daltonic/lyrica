@@ -7,27 +7,32 @@ const routes = [
   {
     path: '/',
     component: () => import(/* webpackChunkName: "Lyrics" */ './screens/Lyrics.vue'),
-    name: 'lyrics'
+    name: 'lyrics',
+    meta: { requiresAuth: true }
   },
   {
     path: '/profile',
     component: () => import(/* webpackChunkName: "profile" */ './screens/Profile.vue'),
-    name: 'profile'
+    name: 'profile',
+    meta: { requiresAuth: true }
   },
   {
     path: '/create',
     component: () => import(/* webpackChunkName: "Create" */ './screens/Create.vue'),
-    name: 'create'
+    name: 'create',
+    meta: { requiresAuth: true }
   },
   {
     path: '/backup',
     component: () => import(/* webpackChunkName: "backup" */ './screens/Backup.vue'),
-    name: 'backup'
+    name: 'backup',
+    meta: { requiresAuth: true }
   },
   {
     path: '/settings',
     component: () => import(/* webpackChunkName: "settings" */ './screens/Settings.vue'),
-    name: 'settings'
+    name: 'settings',
+    meta: { requiresAuth: true }
   },
   {
     path: '/login',
