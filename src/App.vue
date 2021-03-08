@@ -52,7 +52,7 @@
 
         <template v-slot:append>
           <div class="pa-2">
-            <v-btn block> Logout </v-btn>
+            <v-btn @click="logOut()" block> Logout </v-btn>
           </div>
         </template>
       </v-navigation-drawer>
@@ -91,6 +91,15 @@ export default {
         this.isLoggedIn = false;
       }
     });
+  },
+  methods: {
+    logOut() {
+      auth
+        .signOut()
+        .then(() => (this.isLoggedIn = false))
+        .catch((error) => console.log(error.message))
+        .finally(() => this.$router.push({ name: "login" }));
+    },
   },
 };
 </script>

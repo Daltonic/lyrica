@@ -1,14 +1,20 @@
 <template>
   <div>
     <img
-      src="https://css-tricks.com/examples/FullPageBackgroundImage/images/bg.jpg"
+      src="https://cdn.pixabay.com/photo/2015/05/07/11/02/guitar-756326_960_720.jpg"
       id="bg"
       alt=""
     />
     <v-row justify="center" align="center" class="mt-15">
       <v-col cols="12" md="6" sm="12">
         <v-card class="mx-auto" color="dark" outlined>
-          <v-form class="ma-6" ref="form" v-model="valid" lazy-validation>
+          <v-form
+            @submit.prevent="onSubmit"
+            class="ma-6"
+            ref="form"
+            v-model="valid"
+            lazy-validation
+          >
             <v-row>
               <v-col cols="12">
                 <v-text-field
@@ -29,15 +35,21 @@
               </v-col>
 
               <v-col cols="6">
-                <v-btn class="pa-0" to="/forget" color="primary" text>Forget Password</v-btn>
+                <v-btn class="pa-0" to="/forget" color="primary" text
+                  >Forget Password</v-btn
+                >
               </v-col>
-              
+
               <v-col cols="6">
-                <v-btn class="pa-0" to="/register" color="primary" text>Register</v-btn>
+                <v-btn class="pa-0" to="/register" color="primary" text
+                  >Register</v-btn
+                >
               </v-col>
 
               <v-col cols="12">
-                <v-btn type="submit" color="red"> Login </v-btn>
+                <v-btn type="submit" color="red" :loading="requesting">
+                  Login
+                </v-btn>
               </v-col>
             </v-row>
           </v-form>
@@ -48,16 +60,26 @@
 </template>
 
 <script>
+import { auth } from "../firebase";
 export default {
   data: () => ({
     valid: true,
+    requesting: false,
     form: {
       email: "",
-      password: ""
+      password: "",
     },
   }),
 
   methods: {
+    onSubmit() {
+      this.requesting = true;
+      auth
+        .signInWithEmailAndPassword(this.form.email, this.form.password)
+        .then(() => this.$router.push({ name: "lyrics" }))
+        .catch((error) => console.log(error))
+        .finally(() => (this.requesting = false));
+    },
     validate() {
       this.$refs.form.validate();
     },
