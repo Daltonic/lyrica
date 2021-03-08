@@ -29,11 +29,11 @@
               </v-col>
 
               <v-col cols="6">
-                <a to="/forget">Forget Password</a>
+                <v-btn class="pa-0" to="/forget" color="primary" text>Forget Password</v-btn>
               </v-col>
               
               <v-col cols="6">
-                New to Lyrica? <a to="/register">Register</a>
+                <v-btn class="pa-0" to="/register" color="primary" text>Register</v-btn>
               </v-col>
 
               <v-col cols="12">

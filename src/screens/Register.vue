@@ -37,11 +37,11 @@
               </v-col>
               
               <v-col cols="6">
-                <a to="/forget">Forget Password</a>
+                <v-btn class="pa-0" to="/forget" color="primary" text>Forget Password</v-btn>
               </v-col>
               
               <v-col cols="6">
-                Already a member? <a to="/login">Login</a>
+                <v-btn class="pa-0" to="/login" color="primary" text>Login</v-btn>
               </v-col>
 
               <v-col cols="12">
