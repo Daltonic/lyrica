@@ -18,15 +18,6 @@
             <v-row>
               <v-col cols="12">
                 <v-text-field
-                  v-model="form.fullname"
-                  :rules="[(v) => !!v || 'Fullname is required']"
-                  label="Fullname"
-                  required
-                ></v-text-field>
-              </v-col>
-
-              <v-col cols="12">
-                <v-text-field
                   v-model="form.email"
                   :rules="[(v) => /.+@.+/.test(v) || 'Invalid Email address']"
                   label="E-mail"
@@ -36,40 +27,8 @@
               </v-col>
 
               <v-col cols="12">
-                <v-text-field
-                  v-model="form.password"
-                  :rules="[(v) => !!v || 'Password is required']"
-                  label="Password"
-                  type="password"
-                  required
-                ></v-text-field>
-              </v-col>
-
-              <v-col cols="6">
-                <v-btn
-                  type="button"
-                  class="pa-0"
-                  to="/forget"
-                  color="primary"
-                  text
-                  >Forget Password</v-btn
-                >
-              </v-col>
-
-              <v-col cols="6">
-                <v-btn
-                  type="button"
-                  class="pa-0"
-                  to="/login"
-                  color="primary"
-                  text
-                  >Login Instead</v-btn
-                >
-              </v-col>
-
-              <v-col cols="12">
                 <v-btn type="submit" color="red" :loading="requesting">
-                  Register
+                  Send
                 </v-btn>
               </v-col>
             </v-row>
@@ -87,22 +46,16 @@ export default {
     valid: true,
     requesting: false,
     form: {
-      fullname: "",
       email: "",
-      password: "",
     },
   }),
+
   methods: {
     onSubmit() {
       this.requesting = true;
       auth
-        .createUserWithEmailAndPassword(this.form.email, this.form.password)
-        .then((res) => {
-          return res.user.updateProfile({
-            displayName: this.form.fullname,
-          });
-        })
-        .then(() => this.$router.push({ name: "lyrica" }))
+        .sendPasswordResetEmail(this.form.email)
+        .then(() => this.$router.push({ name: "login" }))
         .catch((error) => console.log(error))
         .finally(() => (this.requesting = false));
     },

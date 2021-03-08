@@ -44,6 +44,11 @@ const routes = [
     component: () => import(/* webpackChunkName: "register" */ './screens/Register.vue'),
     name: 'register'
   },
+  {
+    path: '/forget',
+    component: () => import(/* webpackChunkName: "forget" */ './screens/Forget.vue'),
+    name: 'forget'
+  },
 ]
 
 const router = new Router({

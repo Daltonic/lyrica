@@ -19,6 +19,7 @@
               <v-col cols="12">
                 <v-text-field
                   v-model="form.email"
+                  :rules="[(v) => /.+@.+/.test(v) || 'Invalid Email address']"
                   label="E-mail"
                   type="email"
                   required
@@ -28,6 +29,7 @@
               <v-col cols="12">
                 <v-text-field
                   v-model="form.password"
+                  :rules="[(v) => !!v || 'Password is required']"
                   label="Password"
                   type="password"
                   required
@@ -79,15 +81,6 @@ export default {
         .then(() => this.$router.push({ name: "lyrics" }))
         .catch((error) => console.log(error))
         .finally(() => (this.requesting = false));
-    },
-    validate() {
-      this.$refs.form.validate();
-    },
-    reset() {
-      this.$refs.form.reset();
-    },
-    resetValidation() {
-      this.$refs.form.resetValidation();
     },
   },
 };
