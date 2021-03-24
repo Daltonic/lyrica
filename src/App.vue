@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <template v-if="isLoggedIn">
+    <template v-if="!!user">
       <v-app-bar color="white" dense fixed>
         <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
 
@@ -86,7 +86,6 @@ export default {
   data() {
     return {
       drawer: null,
-      isLoggedIn: false,
       items: [
         { title: "Lyrics", icon: "mdi-view-dashboard", link: "/" },
         { title: "Profile", icon: "mdi-account-box", link: "/profile" },
@@ -96,27 +95,19 @@ export default {
       ],
     };
   },
-  created() {
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        this.isLoggedIn = true;
-      } else {
-        this.isLoggedIn = false;
-      }
-    });
-  },
   methods: {
-    ...mapActions(["closeSnackbar"]),
+    ...mapActions(["closeSnackbar, clearUser"]),
     logOut() {
       auth
         .signOut()
-        .then(() => (this.isLoggedIn = false))
-        .catch((error) => console.log(error.message))
-        .finally(() => this.$router.push({ name: "login" }));
+        .then(() => {
+          this.$router.push({ name: "login" })
+          this.clearUser()
+        })
     },
   },
   computed: {
-    ...mapGetters(["snackbar"]),
+    ...mapGetters(["snackbar", "user"]),
   }
 };
 </script>

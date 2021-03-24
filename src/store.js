@@ -6,6 +6,7 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     drawer: false,
+    user: null,
     snackbar: {
       msg: '',
       show: false
@@ -13,6 +14,7 @@ const store = new Vuex.Store({
   },
   mutations: {
     setDrawer: (state, payload) => (state.drawer = payload),
+    user: (state, payload) => (state.user = payload),
     snackbar: (state, payload) => (state.snackbar = payload),
   },
   actions: {
@@ -21,9 +23,11 @@ const store = new Vuex.Store({
       payload.msg = ''
       state.commit("snackbar", payload)
     },
+    clearUser: (state) => (state.commit("user", null)),
   },
   getters: {
     drawer: state => state.drawer,
+    user: state => state.user,
     snackbar: state => state.snackbar,
   }
 })

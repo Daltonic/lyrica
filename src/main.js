@@ -21,8 +21,9 @@ router.beforeEach((to, from, next) => {
 })
 
 let app
-auth.onAuthStateChanged(() => {
+auth.onAuthStateChanged((user) => {
   if (!app) {
+    store.commit("user", user)
     new Vue({
       vuetify,
       store,
