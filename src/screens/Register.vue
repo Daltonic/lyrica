@@ -82,6 +82,7 @@
 
 <script>
 import { auth } from "../firebase";
+import { mapMutations } from "vuex";
 export default {
   data: () => ({
     valid: true,
@@ -93,6 +94,7 @@ export default {
     },
   }),
   methods: {
+    ...mapMutations(["snackbar"]),
     onSubmit() {
       this.requesting = true;
       auth
@@ -102,8 +104,11 @@ export default {
             displayName: this.form.fullname,
           });
         })
-        .then(() => this.$router.push({ name: "lyrica" }))
-        .catch((error) => console.log(error))
+        .then(() => {
+          this.snackbar({show: true, msg:'Welcome, successfully signed up!'})
+          this.$router.push({ name: "lyrics" })
+        })
+        .catch((error) => this.snackbar({show: true, msg: error.message}))
         .finally(() => (this.requesting = false));
     },
   },

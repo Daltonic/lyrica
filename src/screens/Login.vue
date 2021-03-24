@@ -63,6 +63,7 @@
 
 <script>
 import { auth } from "../firebase";
+import { mapMutations } from "vuex";
 export default {
   data: () => ({
     valid: true,
@@ -74,12 +75,16 @@ export default {
   }),
 
   methods: {
+    ...mapMutations(["snackbar"]),
     onSubmit() {
       this.requesting = true;
       auth
         .signInWithEmailAndPassword(this.form.email, this.form.password)
-        .then(() => this.$router.push({ name: "lyrics" }))
-        .catch((error) => console.log(error))
+        .then(() => {
+          this.snackbar({show: true, msg:'Welcome, successfully logged in!'})
+          this.$router.push({ name: "lyrics" })
+        })
+        .catch((error) => this.snackbar({show: true, msg: error.message}))
         .finally(() => (this.requesting = false));
     },
   },

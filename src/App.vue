@@ -63,11 +63,24 @@
         <router-view></router-view>
       </v-container>
     </v-main>
+
+    <div class="text-center ma-2">
+      <v-snackbar v-model="snackbar.show">
+        {{ snackbar.msg }}
+
+        <template v-slot:action="{ attrs }">
+          <v-btn color="pink" text v-bind="attrs" @click="closeSnackbar()">
+            Close
+          </v-btn>
+        </template>
+      </v-snackbar>
+    </div>
   </v-app>
 </template>
 
 <script>
 import { auth } from "./firebase";
+import { mapGetters, mapActions } from "vuex";
 export default {
   name: "App",
   data() {
@@ -93,6 +106,7 @@ export default {
     });
   },
   methods: {
+    ...mapActions(["closeSnackbar"]),
     logOut() {
       auth
         .signOut()
@@ -101,5 +115,8 @@ export default {
         .finally(() => this.$router.push({ name: "login" }));
     },
   },
+  computed: {
+    ...mapGetters(["snackbar"]),
+  }
 };
 </script>
