@@ -17,9 +17,16 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/create',
-    component: () => import(/* webpackChunkName: "Create" */ './screens/Create.vue'),
-    name: 'create',
+    path: '/songs',
+    component: () => import(/* webpackChunkName: "songs" */ './screens/Songs.vue'),
+    name: 'songs',
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/songs/:songId',
+    component: () => import(/* webpackChunkName: "song" */ './screens/Song.vue'),
+    name: 'songs',
+    prop: true,
     meta: { requiresAuth: true }
   },
   {

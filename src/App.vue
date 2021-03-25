@@ -89,7 +89,7 @@ export default {
       items: [
         { title: "Lyrics", icon: "mdi-view-dashboard", link: "/" },
         { title: "Profile", icon: "mdi-account-box", link: "/profile" },
-        { title: "Create", icon: "mdi-file", link: "/create" },
+        { title: "Songs", icon: "mdi-file", link: "/songs" },
         { title: "Backup", icon: "mdi-backup-restore", link: "/backup" },
         { title: "Settings", icon: "mdi-hammer-wrench", link: "/settings" },
       ],
