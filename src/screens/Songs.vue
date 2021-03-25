@@ -1,26 +1,29 @@
 <template>
   <div class="my-12">
-    <v-row v-if="songs.length > 0" justify="center">
-      <v-col v-for="(song, i) in songs" :key="i" cols="12">
-        <v-timeline align-top :dense="$vuetify.breakpoint.smAndDown">
-          <v-timeline-item>
-            <template v-slot:opposite>
-              <span>Tus eu perfecto</span>
-            </template>
+    <v-timeline
+      v-if="songs.length > 0"
+      align-top
+      :dense="$vuetify.breakpoint.smAndDown"
+    >
+      <v-timeline-item v-for="(song, i) in songs" :key="i" :color="song.color">
+        <template v-slot:opposite>
+          <span>Tus eu perfecto</span>
+        </template>
 
-            <v-card dark>
-              <v-card-title class="title"> {{song.title}} </v-card-title>
-              <v-card-text class="white text--primary">
-                <p>song.description</p>
-                <v-btn class="mx-0" outlined>
-                  Button
-                </v-btn>
-              </v-card-text>
-            </v-card>
-          </v-timeline-item>
-        </v-timeline>
-      </v-col>
-    </v-row>
+        <v-card :color="song.color" dark>
+          <v-card-title class="title">
+            {{ song.title }}
+          </v-card-title>
+          <v-card-text class="white text--primary">
+            <p>{{ song.description }}</p>
+            <v-btn :color="song.color" class="mx-0" outlined> Enter </v-btn>
+            <v-btn :color="song.color" class="mx-2" @click="onAction(song)">
+              Actions
+            </v-btn>
+          </v-card-text>
+        </v-card>
+      </v-timeline-item>
+    </v-timeline>
 
     <v-row v-else justify="center" align="center">
       <v-col cols="12" md="8" sm="12">
@@ -35,7 +38,7 @@
       <v-dialog v-model="dialog" persistent max-width="600px">
         <v-card>
           <v-card-title>
-            <span class="headline">song</span>
+            <span class="headline">Song</span>
           </v-card-title>
           <v-card-text>
             <v-container>
@@ -50,15 +53,25 @@
                 </v-col>
 
                 <v-col cols="12">
-                  <v-textarea
-                    counter
-                    clearable
+                  <v-text-field
                     v-model="song.description"
-                    clear-icon="mdi-close-circle"
                     label="What's the song about?"
                     :rules="[(v) => !!v || 'Description is required']"
                     required
-                  ></v-textarea>
+                  ></v-text-field>
+                </v-col>
+
+                <v-col cols="12">
+                  <v-color-picker
+                    label="Choose Color"
+                    dot-size="29"
+                    hide-canvas
+                    hide-inputs
+                    hide-sliders
+                    show-swatches
+                    swatches-max-height="100"
+                    v-model="song.color"
+                  ></v-color-picker>
                 </v-col>
               </v-row>
             </v-container>
@@ -76,16 +89,16 @@
               text
               @click="addSong"
             >
-              Add Song
+              Add
             </v-btn>
             <v-btn
               v-else
               type="submit"
               color="blue darken-1"
               text
-              @click="updatesong"
+              @click="updateSong"
             >
-              Update song
+              Update
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -105,6 +118,21 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-bottom-sheet v-model="sheet">
+      <v-sheet height="200px">
+        <v-list>
+          <v-subheader>Actions for "{{ song.title }}"</v-subheader>
+          <v-list-item @click="editSong()">
+            <v-list-item-title>Edit</v-list-item-title>
+          </v-list-item>
+
+          <v-list-item @click="onRemSong()">
+            <v-list-item-title>Delete</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-sheet>
+    </v-bottom-sheet>
 
     <v-fab-transition>
       <v-btn
@@ -129,13 +157,21 @@
 import { mapMutations } from "vuex";
 export default {
   data: () => ({
-    snackbar: false,
+    sheet: false,
+    tiles: [
+      { img: "keep.png", title: "Keep" },
+      { img: "inbox.png", title: "Inbox" },
+      { img: "hangouts.png", title: "Hangouts" },
+      { img: "messenger.png", title: "Messenger" },
+      { img: "google.png", title: "Google+" },
+    ],
     dialog: false,
     remDialog: false,
     songs: [],
     song: {
       title: "",
       description: "",
+      color: "",
       key: "",
     },
     valid: false,
@@ -143,6 +179,10 @@ export default {
   }),
   methods: {
     ...mapMutations(["snackbar"]),
+    onAction(song) {
+      this.song = song;
+      this.sheet = !this.sheet;
+    },
     addSong() {
       if (this.valid) {
         this.song.key = String(Math.random() * (100 - 1) + 1)
@@ -160,15 +200,15 @@ export default {
       if (this.valid) {
         const index = this.songs.findIndex((i) => i.key == this.song.key);
         this.songs[index] = { ...this.song };
-        this.songs = [...this.songs];
+        // this.songs = [...this.songs];
         this.dialog = !this.dialog;
         this.reset();
       } else {
         this.validate();
       }
     },
-    onRemSong(song) {
-      this.song = { ...song };
+    onRemSong() {
+      this.sheet = !this.sheet;
       this.remDialog = !this.remDialog;
     },
     remSong() {
@@ -176,10 +216,11 @@ export default {
       this.songs.splice(index, 1);
       this.remDialog = !this.remDialog;
       this.snackbar = !this.snackbar;
+      this.reset();
     },
-    editSong(song) {
+    editSong() {
       this.edit = true;
-      this.song = { ...song };
+      this.sheet = !this.sheet;
       this.dialog = !this.dialog;
     },
     reset() {
@@ -192,7 +233,6 @@ export default {
     onClose() {
       this.dialog = false;
       this.remDialog = false;
-      this.reset();
     },
     validate() {
       this.$refs.form.validate();
