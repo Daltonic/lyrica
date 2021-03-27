@@ -75,6 +75,13 @@
         </template>
       </v-snackbar>
     </div>
+    
+    <v-overlay :value="overlay">
+      <v-progress-circular
+        indeterminate
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
   </v-app>
 </template>
 
@@ -96,7 +103,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(["closeSnackbar, clearUser"]),
+    ...mapActions(["closeSnackbar", "clearUser"]),
     logOut() {
       auth
         .signOut()
@@ -107,7 +114,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["snackbar", "user"]),
+    ...mapGetters(["snackbar", "user", "overlay"]),
   }
 };
 </script>

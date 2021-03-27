@@ -6,6 +6,7 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     drawer: false,
+    overlay: false,
     user: null,
     snackbar: {
       msg: '',
@@ -16,6 +17,7 @@ const store = new Vuex.Store({
     setDrawer: (state, payload) => (state.drawer = payload),
     user: (state, payload) => (state.user = payload),
     snackbar: (state, payload) => (state.snackbar = payload),
+    overlay: (state, payload) => (state.overlay = payload),
   },
   actions: {
     closeSnackbar(state, payload = {}) {
@@ -29,6 +31,7 @@ const store = new Vuex.Store({
     drawer: state => state.drawer,
     user: state => state.user,
     snackbar: state => state.snackbar,
+    overlay: state => state.overlay,
   }
 })
 

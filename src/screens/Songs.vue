@@ -178,6 +178,7 @@ export default {
       writer: "",
       createdAt: "",
       updatedAt: "",
+      published: false
     },
     valid: false,
     edit: false,
@@ -186,12 +187,13 @@ export default {
     this.listSongs();
   },
   methods: {
-    ...mapMutations(["snackbar"]),
+    ...mapMutations(["snackbar", "overlay"]),
     onAction(song) {
       this.song = song;
       this.sheet = !this.sheet;
     },
     listSongs() {
+      this.overlay(true)
       const songsRef = db.ref("/songs");
       const uid = auth.currentUser.uid;
       const songs = [];
@@ -204,11 +206,12 @@ export default {
           if (data.uid == uid) songs.push({ ...data, key });
         });
         this.songs = songs;
+        this.overlay(false)
       });
     },
     addSong() {
       if (this.valid) {
-        this.requesting = true;
+        this.overlay(true)
         const songsRef = db.ref("/songs");
         this.song.writer = auth.currentUser.displayName;
         this.song.uid = auth.currentUser.uid;
@@ -222,23 +225,35 @@ export default {
             this.songs.push({ ...this.song });
             this.dialog = !this.dialog;
             this.reset();
+            this.overlay(false)
             this.snackbar({
               show: true,
               msg: "Song created, start adding songs!",
             });
           })
-          .catch((error) => this.snackbar({ show: true, msg: error.message }));
+          .catch((error) => {
+            this.snackbar({ show: true, msg: error.message })
+            this.overlay(false)
+          });
       } else {
         this.validate();
       }
     },
     updateSong() {
       if (this.valid) {
-        const index = this.songs.findIndex((i) => i.key == this.song.key);
-        this.songs[index] = { ...this.song };
-        // this.songs = [...this.songs];
-        this.dialog = !this.dialog;
-        this.reset();
+        this.overlay(true)
+        const songsRef = db.ref('/songs');
+        songsRef
+          .child(this.song.key)
+          .set(this.song)
+          .then(() => {
+            const index = this.songs.findIndex((i) => i.key == this.song.key);
+            this.songs[index] = { ...this.song };
+            this.songs = [...this.songs];
+            this.dialog = !this.dialog;
+            this.reset();
+            this.overlay(false)
+          });
       } else {
         this.validate();
       }
