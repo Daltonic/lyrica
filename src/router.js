@@ -25,7 +25,7 @@ const routes = [
   {
     path: '/songs/:songId',
     component: () => import(/* webpackChunkName: "song" */ './screens/Song.vue'),
-    name: 'songs',
+    name: 'song',
     prop: true,
     meta: { requiresAuth: true }
   },

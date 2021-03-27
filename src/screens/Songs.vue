@@ -7,7 +7,7 @@
     >
       <v-timeline-item v-for="(song, i) in songs" :key="i" :color="song.color">
         <template v-slot:opposite>
-          <span>Tus eu perfecto</span>
+          <span>{{formatDate(song.createdAt)}}</span>
         </template>
 
         <v-card :color="song.color" dark>
@@ -155,6 +155,7 @@
 
 <script>
 import { mapMutations } from "vuex";
+import { auth, db } from "../firebase";
 export default {
   data: () => ({
     sheet: false,
@@ -173,25 +174,60 @@ export default {
       description: "",
       color: "",
       key: "",
+      uid: "",
+      writer: "",
+      createdAt: "",
+      updatedAt: "",
     },
     valid: false,
     edit: false,
   }),
+  created() {
+    this.listSongs();
+  },
   methods: {
     ...mapMutations(["snackbar"]),
     onAction(song) {
       this.song = song;
       this.sheet = !this.sheet;
     },
+    listSongs() {
+      const songsRef = db.ref("/songs");
+      const uid = auth.currentUser.uid;
+      const songs = [];
+
+      songsRef.once("value", (snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+          const key = childSnapshot.key;
+          const data = childSnapshot.val();
+
+          if (data.uid == uid) songs.push({ ...data, key });
+        });
+        this.songs = songs;
+      });
+    },
     addSong() {
       if (this.valid) {
-        this.song.key = String(Math.random() * (100 - 1) + 1)
-          .split(".")
-          .join("");
-        this.songs.push({ ...this.song });
-        this.dialog = !this.dialog;
-        this.reset();
-        this.snackbar({ show: true, msg: "Song created, start adding songs!" });
+        this.requesting = true;
+        const songsRef = db.ref("/songs");
+        this.song.writer = auth.currentUser.displayName;
+        this.song.uid = auth.currentUser.uid;
+        this.song.createdAt = new Date().toJSON();
+        this.song.updatedAt = new Date().toJSON();
+
+        songsRef
+          .push(this.song)
+          .then((data) => {
+            this.song.key = data.key;
+            this.songs.push({ ...this.song });
+            this.dialog = !this.dialog;
+            this.reset();
+            this.snackbar({
+              show: true,
+              msg: "Song created, start adding songs!",
+            });
+          })
+          .catch((error) => this.snackbar({ show: true, msg: error.message }));
       } else {
         this.validate();
       }
@@ -236,6 +272,10 @@ export default {
     },
     validate() {
       this.$refs.form.validate();
+    },
+    formatDate(dateString) {
+      const options = { year: "numeric", month: "long", day: "numeric" };
+      return new Date(dateString).toLocaleDateString(undefined, options);
     },
   },
 };
