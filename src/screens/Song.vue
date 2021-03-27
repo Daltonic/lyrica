@@ -5,9 +5,9 @@
         <v-expansion-panels>
           <v-expansion-panel>
             <v-expansion-panel-header>{{ note.type }}</v-expansion-panel-header>
-            <v-expansion-panel-content>{{
-              note.text
-            }}</v-expansion-panel-content>
+            <v-expansion-panel-content>
+              <div class="preserve-char" v-html="note.text"></div>
+            </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
 
@@ -77,7 +77,7 @@
               text
               @click="addNote"
             >
-              Add Note
+              Add
             </v-btn>
             <v-btn
               v-else
@@ -86,7 +86,7 @@
               text
               @click="updateNote"
             >
-              Update Note
+              Update
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -110,11 +110,11 @@
     <v-fab-transition>
       <v-btn
         key="mdi-plus"
-        color="primary"
+        color="pink"
         fab
         large
         dark
-        absolute
+        fixed
         bottom
         right
         style="bottom: 100px"
@@ -123,23 +123,21 @@
         <v-icon>mdi-plus</v-icon>
       </v-btn>
     </v-fab-transition>
-
-    <v-snackbar v-model="snackbar" timeout="2000">
-      Note successfully deleted!
-
-      <template v-slot:action="{ attrs }">
-        <v-btn color="pink" text v-bind="attrs" @click="snackbar = false">
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
   </div>
 </template>
 
 <script>
+import { mapMutations } from "vuex";
+import { db } from "../firebase";
 export default {
+  name: "song",
+  props: {
+    id: {
+      type: String,
+      required: true,
+    },
+  },
   data: () => ({
-    snackbar: false,
     dialog: false,
     remDialog: false,
     notes: [],
@@ -148,26 +146,55 @@ export default {
     valid: false,
     edit: false,
   }),
+  created() {
+    this.listNotes();
+  },
   methods: {
+    ...mapMutations(["overlay"]),
+    listNotes() {
+      this.overlay(true);
+      const notesRef = db.ref(`/songs/${this.id}/notes`);
+      const notes = [];
+
+      notesRef.once("value", (snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+          const key = childSnapshot.key;
+          const data = childSnapshot.val();
+
+          notes.push({ ...data, key });
+        });
+        this.notes = notes;
+        this.overlay(false);
+      });
+    },
     addNote() {
       if (this.valid) {
-        this.note.key = String(Math.random() * (100 - 1) + 1)
-          .split(".")
-          .join("");
-        this.notes.push({ ...this.note });
-        this.dialog = !this.dialog;
-        this.reset();
+        const notesRef = db.ref(`/songs/${this.id}/notes`);
+
+        notesRef.push(this.note).then((data) => {
+          this.note.key = data.key;
+          this.notes.push({ ...this.note });
+          this.dialog = !this.dialog;
+          this.reset();
+        });
       } else {
         this.validate();
       }
     },
     updateNote() {
       if (this.valid) {
-        const index = this.notes.findIndex((i) => i.key == this.note.key);
-        this.notes[index] = { ...this.note };
-        this.notes = [...this.notes];
-        this.dialog = !this.dialog;
-        this.reset();
+        const notesRef = db.ref(`/songs/${this.id}/notes`);
+
+        notesRef
+          .child(this.note.key)
+          .set(this.note)
+          .then(() => {
+            const index = this.notes.findIndex((i) => i.key == this.note.key);
+            this.notes[index] = { ...this.note };
+            this.notes = [...this.notes];
+            this.dialog = !this.dialog;
+            this.reset();
+          });
       } else {
         this.validate();
       }
@@ -177,10 +204,16 @@ export default {
       this.remDialog = !this.remDialog;
     },
     remNote() {
-      const index = this.notes.findIndex((i) => i.key == this.note.key);
-      this.notes.splice(index, 1);
-      this.remDialog = !this.remDialog;
-      this.snackbar = !this.snackbar;
+      const notesRef = db.ref(`/songs/${this.id}/notes`);
+      notesRef
+        .child(this.note.key)
+        .remove()
+        .then(() => {
+          const index = this.notes.findIndex((i) => i.key == this.note.key);
+          this.notes.splice(index, 1);
+          this.remDialog = !this.remDialog;
+          this.reset();
+        });
     },
     editNote(note) {
       this.edit = true;
@@ -205,3 +238,8 @@ export default {
   },
 };
 </script>
+<style scoped>
+.preserve-char {
+  white-space: pre-wrap;
+}
+</style>

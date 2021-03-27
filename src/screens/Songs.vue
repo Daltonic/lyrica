@@ -22,7 +22,14 @@
           </v-card-title>
           <v-card-text class="white text--primary py-5">
             <p>{{ song.description | truncate(100) }}</p>
-            <v-btn :color="song.color" class="mx-0" outlined> Enter </v-btn>
+            <v-btn
+              :color="song.color"
+              class="mx-0"
+              :to="`/songs/${song.key}`"
+              outlined
+            >
+              Enter
+            </v-btn>
             <v-btn :color="song.color" class="mx-2" @click="onAction(song)">
               Actions
             </v-btn>
@@ -164,6 +171,7 @@
 import { mapMutations } from "vuex";
 import { auth, db } from "../firebase";
 export default {
+  name: "songs",
   data: () => ({
     sheet: false,
     dialog: false,

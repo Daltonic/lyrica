@@ -23,10 +23,10 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/songs/:songId',
+    path: '/songs/:id',
     component: () => import(/* webpackChunkName: "song" */ './screens/Song.vue'),
     name: 'song',
-    prop: true,
+    props: true,
     meta: { requiresAuth: true }
   },
   {
