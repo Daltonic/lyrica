@@ -1,13 +1,19 @@
 <template>
-  <div class="my-12">
+  <div ref="container" class="my-12">
     <v-timeline
       v-if="songs.length > 0"
       align-top
       :dense="$vuetify.breakpoint.smAndDown"
     >
-      <v-timeline-item v-for="(song, i) in songs" :key="i" :color="song.color" icon="mdi-music-note" fill-dot>
+      <v-timeline-item
+        v-for="(song, i) in songs"
+        :key="i"
+        :color="song.color"
+        icon="mdi-music-note"
+        fill-dot
+      >
         <template v-slot:opposite>
-          <span>{{formatDate(song.createdAt)}}</span>
+          <span>{{ formatDate(song.createdAt) }}</span>
         </template>
 
         <v-card :color="song.color" dark>
@@ -109,7 +115,8 @@
       <v-card>
         <v-card-title class="headline"> Are you sure? </v-card-title>
         <v-card-text
-          >You are about to delete this <strong>"{{ song.title }}"</strong>!</v-card-text
+          >You are about to delete this
+          <strong>"{{ song.title }}"</strong>!</v-card-text
         >
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -141,7 +148,7 @@
         fab
         large
         dark
-        absolute
+        fixed
         bottom
         right
         style="bottom: 100px"
@@ -171,13 +178,16 @@ export default {
       writer: "",
       createdAt: "",
       updatedAt: "",
-      published: false
+      published: false,
     },
     valid: false,
     edit: false,
   }),
   created() {
     this.listSongs();
+  },
+  updated() {
+    this.scrollToEnd()
   },
   methods: {
     ...mapMutations(["snackbar", "overlay"]),
@@ -186,7 +196,7 @@ export default {
       this.sheet = !this.sheet;
     },
     listSongs() {
-      this.overlay(true)
+      this.overlay(true);
       const songsRef = db.ref("/songs");
       const uid = auth.currentUser.uid;
       const songs = [];
@@ -196,14 +206,14 @@ export default {
           const key = childSnapshot.key;
           const data = childSnapshot.val();
 
-          if (data.uid == uid) songs.push({ ...data, key });
+          if (data.uid == uid) songs.unshift({ ...data, key });
         });
         this.songs = songs;
-        this.overlay(false)
+        this.overlay(false);
       });
     },
     onAddSong() {
-      this.dialog = !this.dialog
+      this.dialog = !this.dialog;
     },
     addSong() {
       if (this.valid) {
@@ -217,7 +227,7 @@ export default {
           .push(this.song)
           .then((data) => {
             this.song.key = data.key;
-            this.songs.push({ ...this.song });
+            this.songs.unshift({ ...this.song });
             this.dialog = !this.dialog;
             this.snackbar({
               show: true,
@@ -226,7 +236,7 @@ export default {
             this.reset();
           })
           .catch((error) => {
-            this.snackbar({ show: true, msg: error.message })
+            this.snackbar({ show: true, msg: error.message });
           });
       } else {
         this.validate();
@@ -235,7 +245,7 @@ export default {
     updateSong() {
       if (this.valid) {
         this.song.updatedAt = new Date().toJSON();
-        const songsRef = db.ref('/songs');
+        const songsRef = db.ref("/songs");
 
         songsRef
           .child(this.song.key)
@@ -252,7 +262,7 @@ export default {
             this.reset();
           })
           .catch((error) => {
-            this.snackbar({ show: true, msg: error.message })
+            this.snackbar({ show: true, msg: error.message });
           });
       } else {
         this.validate();
@@ -271,7 +281,7 @@ export default {
           const index = this.songs.findIndex((i) => i.key == this.song.key);
           this.songs.splice(index, 1);
           this.remDialog = !this.remDialog;
-          
+
           this.snackbar({
             show: true,
             msg: "Song successfully removed!",
@@ -302,6 +312,10 @@ export default {
     formatDate(dateString) {
       const options = { year: "numeric", month: "long", day: "numeric" };
       return new Date(dateString).toLocaleDateString(undefined, options);
+    },
+    scrollToEnd () {
+      const elmnt = this.$refs.container;
+      elmnt.scrollTop = elmnt.scrollHeight;
     },
   },
 };
