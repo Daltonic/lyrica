@@ -13,15 +13,15 @@
         fill-dot
       >
         <template v-slot:opposite>
-          <span>{{ formatDate(song.createdAt) }}</span>
+          <span>{{ song.createdAt | formatDate }}</span>
         </template>
 
         <v-card :color="song.color" dark>
           <v-card-title class="title">
             {{ song.title }}
           </v-card-title>
-          <v-card-text class="white text--primary">
-            <p>{{ song.description }}</p>
+          <v-card-text class="white text--primary py-5">
+            <p>{{ song.description | truncate(100) }}</p>
             <v-btn :color="song.color" class="mx-0" outlined> Enter </v-btn>
             <v-btn :color="song.color" class="mx-2" @click="onAction(song)">
               Actions
@@ -186,9 +186,6 @@ export default {
   created() {
     this.listSongs();
   },
-  updated() {
-    this.scrollToEnd()
-  },
   methods: {
     ...mapMutations(["snackbar", "overlay"]),
     onAction(song) {
@@ -308,14 +305,6 @@ export default {
     },
     validate() {
       this.$refs.form.validate();
-    },
-    formatDate(dateString) {
-      const options = { year: "numeric", month: "long", day: "numeric" };
-      return new Date(dateString).toLocaleDateString(undefined, options);
-    },
-    scrollToEnd () {
-      const elmnt = this.$refs.container;
-      elmnt.scrollTop = elmnt.scrollHeight;
     },
   },
 };
