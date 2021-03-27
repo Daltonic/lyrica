@@ -5,7 +5,7 @@
       align-top
       :dense="$vuetify.breakpoint.smAndDown"
     >
-      <v-timeline-item v-for="(song, i) in songs" :key="i" :color="song.color">
+      <v-timeline-item v-for="(song, i) in songs" :key="i" :color="song.color" icon="mdi-music-note" fill-dot>
         <template v-slot:opposite>
           <span>{{formatDate(song.createdAt)}}</span>
         </template>
@@ -109,7 +109,7 @@
       <v-card>
         <v-card-title class="headline"> Are you sure? </v-card-title>
         <v-card-text
-          >You are about to delete this "{{ song.title }}"!</v-card-text
+          >You are about to delete this <strong>"{{ song.title }}"</strong>!</v-card-text
         >
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -145,7 +145,7 @@
         bottom
         right
         style="bottom: 100px"
-        @click="dialog = !dialog"
+        @click="onAddSong()"
       >
         <v-icon>mdi-plus</v-icon>
       </v-btn>
@@ -159,13 +159,6 @@ import { auth, db } from "../firebase";
 export default {
   data: () => ({
     sheet: false,
-    tiles: [
-      { img: "keep.png", title: "Keep" },
-      { img: "inbox.png", title: "Inbox" },
-      { img: "hangouts.png", title: "Hangouts" },
-      { img: "messenger.png", title: "Messenger" },
-      { img: "google.png", title: "Google+" },
-    ],
     dialog: false,
     remDialog: false,
     songs: [],
@@ -209,9 +202,11 @@ export default {
         this.overlay(false)
       });
     },
+    onAddSong() {
+      this.dialog = !this.dialog
+    },
     addSong() {
       if (this.valid) {
-        this.overlay(true)
         const songsRef = db.ref("/songs");
         this.song.writer = auth.currentUser.displayName;
         this.song.uid = auth.currentUser.uid;
@@ -224,16 +219,14 @@ export default {
             this.song.key = data.key;
             this.songs.push({ ...this.song });
             this.dialog = !this.dialog;
-            this.reset();
-            this.overlay(false)
             this.snackbar({
               show: true,
-              msg: "Song created, start adding songs!",
+              msg: "Song successfully created!",
             });
+            this.reset();
           })
           .catch((error) => {
             this.snackbar({ show: true, msg: error.message })
-            this.overlay(false)
           });
       } else {
         this.validate();
@@ -241,8 +234,9 @@ export default {
     },
     updateSong() {
       if (this.valid) {
-        this.overlay(true)
+        this.song.updatedAt = new Date().toJSON();
         const songsRef = db.ref('/songs');
+
         songsRef
           .child(this.song.key)
           .set(this.song)
@@ -251,8 +245,14 @@ export default {
             this.songs[index] = { ...this.song };
             this.songs = [...this.songs];
             this.dialog = !this.dialog;
+            this.snackbar({
+              show: true,
+              msg: "Song successfully updated!",
+            });
             this.reset();
-            this.overlay(false)
+          })
+          .catch((error) => {
+            this.snackbar({ show: true, msg: error.message })
           });
       } else {
         this.validate();
@@ -263,11 +263,22 @@ export default {
       this.remDialog = !this.remDialog;
     },
     remSong() {
-      const index = this.songs.findIndex((i) => i.key == this.song.key);
-      this.songs.splice(index, 1);
-      this.remDialog = !this.remDialog;
-      this.snackbar = !this.snackbar;
-      this.reset();
+      const songsRef = db.ref(`/songs`);
+      songsRef
+        .child(this.song.key)
+        .remove()
+        .then(() => {
+          const index = this.songs.findIndex((i) => i.key == this.song.key);
+          this.songs.splice(index, 1);
+          this.remDialog = !this.remDialog;
+          
+          this.snackbar({
+            show: true,
+            msg: "Song successfully removed!",
+          });
+          this.reset();
+        })
+        .catch((error) => this.snackbar({ show: true, msg: error.message }));
     },
     editSong() {
       this.edit = true;
