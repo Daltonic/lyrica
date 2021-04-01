@@ -38,15 +38,6 @@
       </v-timeline-item>
     </v-timeline>
 
-    <v-row v-else justify="center" align="center">
-      <v-col cols="12" md="8" sm="12">
-        <v-alert border="right" colored-border type="info" elevation="2">
-          You're at the right place, click on the big plus button at the bottom
-          right to start adding songs.
-        </v-alert>
-      </v-col>
-    </v-row>
-
     <v-form v-model="valid" lazy-validation ref="form" justify="center">
       <v-dialog v-model="dialog" persistent max-width="600px">
         <v-card>
@@ -137,12 +128,18 @@
       <v-sheet height="200px">
         <v-list>
           <v-subheader>Actions for "{{ song.title }}"</v-subheader>
+          <v-list-item @click="publishSong()">
+            <v-list-item-title
+              >{{ song.published ? "Unp" : "P" }}ublish</v-list-item-title
+            >
+          </v-list-item>
+
           <v-list-item @click="editSong()">
             <v-list-item-title>Edit</v-list-item-title>
           </v-list-item>
 
           <v-list-item @click="onRemSong()">
-            <v-list-item-title>Delete</v-list-item-title>
+            <v-list-item-title color="red">Delete</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-sheet>
@@ -299,6 +296,30 @@ export default {
       this.edit = true;
       this.sheet = !this.sheet;
       this.dialog = !this.dialog;
+    },
+    publishSong() {
+      this.song.updatedAt = new Date().toJSON();
+      this.song.published = !this.song.published;
+      const songsRef = db.ref("/songs");
+
+      songsRef
+        .child(this.song.key)
+        .set(this.song)
+        .then(() => {
+          const index = this.songs.findIndex((i) => i.key == this.song.key);
+          this.songs[index] = { ...this.song };
+          this.songs = [...this.songs];
+          this.sheet = !this.sheet;
+          this.snackbar({
+            show: true,
+            msg: `Song successfully ${
+              this.song.published ? "Unp" : "P"
+            }ublished!`,
+          });
+        })
+        .catch((error) => {
+          this.snackbar({ show: true, msg: error.message });
+        });
     },
     reset() {
       this.edit = false;
