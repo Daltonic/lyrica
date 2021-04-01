@@ -1,15 +1,23 @@
 <template>
   <div class="my-12">
-    <v-row v-if="notes.length > 0" justify="center">
-      <v-col v-for="(note, i) in notes" :key="i" cols="12">
-        <v-expansion-panels>
-          <v-expansion-panel>
-            <v-expansion-panel-header>{{ note.type }}</v-expansion-panel-header>
-            <v-expansion-panel-content>
-              <div class="preserve-char" v-html="note.text"></div>
-            </v-expansion-panel-content>
-          </v-expansion-panel>
-        </v-expansion-panels>
+    <draggable
+      v-if="notes.length > 0"
+      justify="center"
+      v-model="notes"
+      @change="onSort"
+      draggable=".item"
+    >
+      <v-expansion-panels
+        v-for="note in notes"
+        :key="note.id"
+        class="item my-5"
+      >
+        <v-expansion-panel>
+          <v-expansion-panel-header>{{ note.type }}</v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <div class="preserve-char" v-html="note.text"></div>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
 
         <v-row justify="center" align="center" class="mt-2">
           <v-btn icon color="indigo" @click="editNote(note)">
@@ -19,17 +27,8 @@
             <v-icon>mdi-trash-can</v-icon>
           </v-btn>
         </v-row>
-      </v-col>
-    </v-row>
-
-    <v-row v-else justify="center" align="center">
-      <v-col cols="12" md="8" sm="12">
-        <v-alert border="right" colored-border type="info" elevation="2">
-          You're at the right place, click on the big plus button at the bottom
-          right to start adding notes.
-        </v-alert>
-      </v-col>
-    </v-row>
+      </v-expansion-panels>
+    </draggable>
 
     <v-form v-model="valid" lazy-validation ref="form" justify="center">
       <v-dialog v-model="dialog" persistent max-width="600px">
@@ -110,6 +109,23 @@
     <v-fab-transition>
       <v-btn
         key="mdi-plus"
+        color="primary"
+        fab
+        large
+        dark
+        fixed
+        bottom
+        left
+        style="bottom: 100px"
+        to="/songs"
+      >
+        <v-icon>mdi-keyboard-backspace</v-icon>
+      </v-btn>
+    </v-fab-transition>
+    
+    <v-fab-transition>
+      <v-btn
+        key="mdi-plus"
         color="pink"
         fab
         large
@@ -127,6 +143,7 @@
 </template>
 
 <script>
+import draggable from "vuedraggable";
 import { mapMutations } from "vuex";
 import { db } from "../firebase";
 export default {
@@ -148,6 +165,9 @@ export default {
   }),
   created() {
     this.listNotes();
+  },
+  components: {
+    draggable,
   },
   methods: {
     ...mapMutations(["overlay"]),
@@ -234,6 +254,10 @@ export default {
     },
     validate() {
       this.$refs.form.validate();
+    },
+    onSort(event) {
+      const notesRef = db.ref(`/songs/${this.id}/notes`);
+      if (event.moved) notesRef.set(this.notes);
     },
   },
 };
