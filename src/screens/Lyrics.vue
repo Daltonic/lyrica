@@ -1,27 +1,35 @@
 <template>
-  <div>
-    <v-timeline align-top :dense="$vuetify.breakpoint.smAndDown">
+  <div ref="container" class="my-12">
+    <v-timeline
+      v-if="songs.length > 0"
+      align-top
+      :dense="$vuetify.breakpoint.smAndDown"
+    >
       <v-timeline-item
-        v-for="(item, i) in items"
+        v-for="(song, i) in songs"
         :key="i"
-        :color="item.color"
-        :icon="item.icon"
+        :color="song.color"
+        icon="mdi-music-note"
         fill-dot
       >
         <template v-slot:opposite>
-          <span>Tus eu perfecto</span>
+          <span>{{ song.createdAt | formatDate }}</span>
         </template>
 
-        <v-card :color="item.color" dark>
-          <v-card-title class="title"> Lorem Ipsum Dolor </v-card-title>
-          <v-card-text class="white text--primary">
-            <p>
-              Lorem ipsum dolor sit amet, no nam oblique veritus. Commune
-              scaevola imperdiet nec ut, sed euismod convenire principes at. Est
-              et nobis iisque percipit, an vim zril disputando voluptatibus, vix
-              an salutandi sententiae.
-            </p>
-            <v-btn :color="item.color" class="mx-0" outlined> Button </v-btn>
+        <v-card :color="song.color" dark>
+          <v-card-title class="title">
+            {{ song.title }}
+          </v-card-title>
+          <v-card-text class="white text--primary py-5">
+            <p>{{ song.description | truncate(100) }}</p>
+            <v-btn
+              :color="song.color"
+              class="mx-0"
+              :to="`/lyrics/${song.key}`"
+              outlined
+            >
+              Enter
+            </v-btn>
           </v-card-text>
         </v-card>
       </v-timeline-item>
@@ -30,63 +38,54 @@
     <v-fab-transition>
       <v-btn
         key="mdi-plus"
-        color="pink"
+        color="primary"
         fab
         large
         dark
-        absolute
+        fixed
         bottom
         right
-        style="bottom: 100px;"
+        style="bottom: 100px"
+        to="/songs"
       >
         <v-icon>mdi-plus</v-icon>
       </v-btn>
     </v-fab-transition>
-
-    <v-bottom-navigation :value="value" color="primary" fixed>
-      <v-btn>
-        <span>Recents</span>
-
-        <v-icon>mdi-history</v-icon>
-      </v-btn>
-
-      <v-btn>
-        <span>Favorites</span>
-
-        <v-icon>mdi-heart</v-icon>
-      </v-btn>
-
-      <v-btn>
-        <span>Nearby</span>
-
-        <v-icon>mdi-map-marker</v-icon>
-      </v-btn>
-    </v-bottom-navigation>
   </div>
 </template>
 
 <script>
+import { mapMutations } from "vuex";
+import { auth, db } from "../firebase";
 export default {
+  name: "songs",
   data: () => ({
-    items: [
-      {
-        color: "red lighten-2",
-        icon: "mdi-star",
-      },
-      {
-        color: "purple darken-1",
-        icon: "mdi-book-variant",
-      },
-      {
-        color: "green lighten-1",
-        icon: "mdi-airballoon",
-      },
-      {
-        color: "indigo",
-        icon: "mdi-buffer",
-      },
-    ],
-    value: 1,
+    songs: [],
+    valid: false,
   }),
+  created() {
+    this.listSongs();
+  },
+  methods: {
+    ...mapMutations(["overlay"]),
+    listSongs() {
+      this.overlay(true);
+      const songsRef = db.ref("/songs");
+      const uid = auth.currentUser.uid;
+      const songs = [];
+
+      songsRef.once("value", (snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+          const key = childSnapshot.key;
+          const data = childSnapshot.val();
+
+          if (data.uid == uid && data.published)
+            songs.unshift({ ...data, key });
+        });
+        this.songs = songs;
+        this.overlay(false);
+      });
+    },
+  },
 };
 </script>
