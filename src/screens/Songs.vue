@@ -25,10 +25,10 @@
             <v-btn
               :color="song.color"
               class="mx-0"
-              :to="`/songs/${song.key}`"
+              :to="`/lyrics/${song.key}`"
               outlined
             >
-              Enter
+              View
             </v-btn>
             <v-btn :color="song.color" class="mx-2" @click="onAction(song)">
               Actions
@@ -134,6 +134,10 @@
             >
           </v-list-item>
 
+          <v-list-item :to="`/songs/${song.key}`">
+            <v-list-item-title>Notes</v-list-item-title>
+          </v-list-item>
+          
           <v-list-item @click="editSong()">
             <v-list-item-title>Edit</v-list-item-title>
           </v-list-item>

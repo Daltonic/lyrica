@@ -30,6 +30,13 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/lyrics/:id',
+    component: () => import(/* webpackChunkName: "lyric" */ './screens/Lyric.vue'),
+    name: 'lyric',
+    props: true,
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/backup',
     component: () => import(/* webpackChunkName: "backup" */ './screens/Backup.vue'),
     name: 'backup',
